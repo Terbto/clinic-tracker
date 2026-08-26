@@ -229,20 +229,9 @@
 // ===== ตั้งค่า =====
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz2fkJdZrUVtQh-WKVLkswN4hzUot35b4xoYTMYyV6iv4Pu1-HQxo8isu0v6aK1HYpMg/exec";
 
-const DEFAULT_CHANNELS = [
-  { code: 1, label: "Facebook เพจคลินิก" },
-  { code: 2, label: "LINE Official" },
-  { code: 3, label: "Google ค้นหา" },
-  { code: 4, label: "คนไข้เก่าแนะนำ" },
-  { code: 5, label: "ป้าย/หน้าร้าน" },
-  { code: 6, label: "Instagram" },
-  { code: 7, label: "TikTok" },
-  { code: 8, label: "อื่นๆ" },
-];
-
 // ===== state =====
 let entries = [];
-let channels = JSON.parse(localStorage.getItem("clinic-channels") || "null") || DEFAULT_CHANNELS;
+let channels = [];
 let selectedChannel = null;
 let editingChannels = false;
 
@@ -264,10 +253,6 @@ function formatThaiDate(raw) {
   return d.toLocaleDateString("th-TH", { year: "numeric", month: "short", day: "numeric" });
 }
 
-function saveChannels() {
-  localStorage.setItem("clinic-channels", JSON.stringify(channels));
-}
-
 // ===== API =====
 async function fetchEntries() {
   const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now(), {
@@ -276,7 +261,7 @@ async function fetchEntries() {
   });
   const data = await res.json();
   if (!data.ok) throw new Error(data.error || "โหลดข้อมูลไม่สำเร็จ");
-  return data.entries
+  const parsedEntries = data.entries
     .map((row) => ({
       id: row.rowIndex,
       cn: String(row.cn),
@@ -287,6 +272,8 @@ async function fetchEntries() {
       note: row.note,
     }))
     .reverse();
+  const parsedChannels = (data.channels || []).map((c) => ({ code: Number(c.code), label: String(c.label) }));
+  return { entries: parsedEntries, channels: parsedChannels };
 }
 
 async function postEntry(entry) {
@@ -310,10 +297,36 @@ async function deleteEntryRemote(rowIndex) {
   if (!data.ok) throw new Error(data.error || "ลบไม่สำเร็จ");
 }
 
+async function addChannelRemote(label) {
+  const params = new URLSearchParams();
+  params.append("action", "addChannel");
+  params.append("label", label);
+  const res = await fetch(APPS_SCRIPT_URL, { method: "POST", body: params });
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch (e) { data = { ok: false, error: text.slice(0, 200) }; }
+  if (!data.ok) throw new Error(data.message || data.error || "เพิ่มช่องทางไม่สำเร็จ");
+  return (data.channels || []).map((c) => ({ code: Number(c.code), label: String(c.label) }));
+}
+
+async function deleteChannelRemote(code) {
+  const params = new URLSearchParams();
+  params.append("action", "deleteChannel");
+  params.append("code", code);
+  const res = await fetch(APPS_SCRIPT_URL, { method: "POST", body: params });
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch (e) { data = { ok: false, error: text.slice(0, 200) }; }
+  if (!data.ok) throw new Error(data.message || data.error || "ลบช่องทางไม่สำเร็จ");
+  return (data.channels || []).map((c) => ({ code: Number(c.code), label: String(c.label) }));
+}
+
 async function refreshEntries() {
   setStatus("saving");
   try {
-    entries = await fetchEntries();
+    const result = await fetchEntries();
+    entries = result.entries;
+    channels = result.channels;
     setStatus("saved");
   } catch (err) {
     setStatus("error");
@@ -345,12 +358,19 @@ function renderChannels() {
     });
     const rm = chip.querySelector(".rm");
     if (rm) {
-      rm.addEventListener("click", (e) => {
+      rm.addEventListener("click", async (e) => {
         e.stopPropagation();
         const inUse = entries.some((en) => en.channelCode === c.code);
-        if (inUse) return;
-        channels = channels.filter((x) => x.code !== c.code);
-        saveChannels();
+        if (inUse) {
+          alert("ช่องทางนี้มีข้อมูลลูกค้าผูกอยู่แล้ว ลบไม่ได้");
+          return;
+        }
+        rm.style.pointerEvents = "none";
+        try {
+          channels = await deleteChannelRemote(c.code);
+        } catch (err) {
+          alert(err.message);
+        }
         renderChannels();
         renderSummary();
       });
@@ -461,14 +481,19 @@ document.getElementById("editChannelsBtn").addEventListener("click", () => {
   renderChannels();
 });
 
-document.getElementById("addChannelBtn").addEventListener("click", () => {
+document.getElementById("addChannelBtn").addEventListener("click", async () => {
   const input = document.getElementById("newChannelInput");
+  const btn = document.getElementById("addChannelBtn");
   const label = input.value.trim();
   if (!label) return;
-  const nextCode = channels.length ? Math.max(...channels.map((c) => c.code)) + 1 : 1;
-  channels.push({ code: nextCode, label });
-  saveChannels();
-  input.value = "";
+  btn.disabled = true;
+  try {
+    channels = await addChannelRemote(label);
+    input.value = "";
+  } catch (err) {
+    alert(err.message);
+  }
+  btn.disabled = false;
   renderChannels();
   renderSummary();
 });
