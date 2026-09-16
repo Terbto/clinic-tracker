@@ -6,7 +6,7 @@
 <title>เติบโต คลินิกเด็กและวัยรุ่น — บันทึกช่องทางลูกค้า</title>
 <link rel="icon" type="image/png" href="logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
@@ -17,7 +17,7 @@
   }
   *{box-sizing:border-box;}
   body{
-    margin:0; font-family:'Sarabun',sans-serif; color:var(--text);
+    margin:0; font-family:'Prompt',sans-serif; color:var(--text);
     padding:32px 20px 70px;
     background:
       radial-gradient(circle at 8% 10%, rgba(255,201,74,0.18) 0, transparent 45%),
@@ -38,7 +38,7 @@
   h1{font-family:'Prompt',sans-serif; font-weight:600; font-size:22px; margin:0; color:var(--teal-deep); letter-spacing:0.2px;}
 
   #exportBtn{
-    font-family:'Sarabun',sans-serif; font-weight:700; font-size:14px; color:#fff;
+    font-family:'Prompt',sans-serif; font-weight:700; font-size:14px; color:#fff;
     background:linear-gradient(135deg, var(--teal), var(--teal-deep));
     border:none; border-radius:999px; padding:12px 26px; cursor:pointer; white-space:nowrap;
     box-shadow:0 6px 16px rgba(10,99,87,0.28);
@@ -59,12 +59,12 @@
   label{display:block; font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:6px;}
   input{
     width:100%; height:40px; border:1.5px solid var(--border); border-radius:14px; padding:0 12px;
-    font-size:13.5px; font-family:'Sarabun',sans-serif; background:#FBFEFD; color:var(--text); outline:none;
+    font-size:13.5px; font-family:'Prompt',sans-serif; background:#FBFEFD; color:var(--text); outline:none;
     transition:border-color 0.15s ease, box-shadow 0.15s ease;
   }
   input:focus{ border-color:var(--teal); box-shadow:0 0 0 3px rgba(14,156,139,0.15); }
   .field{margin-bottom:16px;}
-  .mono{font-family:'IBM Plex Mono',monospace;}
+  .mono{font-family:'Prompt',sans-serif;}
 
   .channel-row{display:flex; align-items:center; justify-content:space-between;}
   .link-btn{border:none; background:none; color:var(--teal); font-size:11.5px; font-weight:700; cursor:pointer; padding:0;}
@@ -80,7 +80,7 @@
     border:1.5px solid var(--teal); background:var(--teal-faint);
     box-shadow:0 6px 14px rgba(14,156,139,0.18); transform:translateY(-1px);
   }
-  .chip .code{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:16px;}
+  .chip .code{font-family:'Prompt',sans-serif; font-weight:700; font-size:16px;}
   .chip.active .code, .chip.active .lbl{color:var(--teal-deep);}
   .chip .lbl{font-size:10.5px; line-height:1.2; color:var(--muted); text-align:center;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
@@ -103,7 +103,7 @@
     background:#FCEBE7; border-radius:10px; padding:8px 10px;
   }
   #saveBtn{
-    width:100%; font-family:'Sarabun',sans-serif; font-weight:700; font-size:15px; color:#fff;
+    width:100%; font-family:'Prompt',sans-serif; font-weight:700; font-size:15px; color:#fff;
     background:linear-gradient(135deg, var(--teal), var(--teal-deep));
     border:none; border-radius:16px; padding:13px 0; cursor:pointer;
     box-shadow:0 8px 18px rgba(10,99,87,0.26);
@@ -118,7 +118,7 @@
     text-transform:uppercase;
   }
   .sum-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
-  .sum-code{font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:700; color:var(--teal-deep); width:20px;}
+  .sum-code{font-family:'Prompt',sans-serif; font-size:12px; font-weight:700; color:var(--teal-deep); width:20px;}
   .sum-label{font-size:13px; width:130px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .bar-track{flex:1; background:var(--teal-faint); border-radius:999px; height:10px; overflow:hidden;}
   .bar-fill{height:100%; background:linear-gradient(90deg, var(--amber), #FF6FA5); border-radius:999px; transition:width 0.3s ease;}
@@ -608,60 +608,45 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   XLSX.writeFile(wb, `customer-source_${todayStr()}.xlsx`);
 });
 
-// ===== PASSWORD / init =====
-const ACCESS_PASSWORD = "foolman";
+// ===== init + password gate =====
+const ACCESS_PASSWORD = "Terbto@2569";
 
-function startApp() {
-  const wrap = document.querySelector(".wrap");
-
-  if (sessionStorage.getItem("clinic_authenticated") === "yes") {
-    wrap.style.display = "block";
-    render();
-    refreshEntries();
-    return;
-  }
-
-  const password = prompt("กรุณาใส่รหัสผ่าน");
-
-  if (password === ACCESS_PASSWORD) {
-    sessionStorage.setItem("clinic_authenticated", "yes");
-    wrap.style.display = "block";
-    render();
-    refreshEntries();
-  } else {
-    document.body.innerHTML = `
-      <div style="
-        font-family:'Sarabun',sans-serif;
-        max-width:420px;
-        margin:120px auto;
-        padding:30px 24px;
-        text-align:center;
-        color:#22302E;
-      ">
-        <div style="font-size:42px; margin-bottom:12px;">🔒</div>
-        <h2 style="margin:0 0 8px; color:#0A6357;">หน้านี้สำหรับเจ้าหน้าที่</h2>
-        <p style="margin:0 0 20px; color:#7B8B87;">รหัสผ่านไม่ถูกต้อง</p>
-        <button
-          onclick="location.reload()"
-          style="
-            border:none;
-            background:#0E9C8B;
-            color:white;
-            padding:12px 24px;
-            border-radius:999px;
-            font-family:'Sarabun',sans-serif;
-            font-weight:700;
-            cursor:pointer;
-          "
-        >
-          ลองใหม่
-        </button>
-      </div>
-    `;
-  }
+function openApp() {
+  document.getElementById("passwordGate")?.remove();
+  document.querySelector(".wrap").style.display = "block";
+  render();
+  refreshEntries();
 }
 
-startApp();
+if (sessionStorage.getItem("clinic_authenticated") === "yes") {
+  openApp();
+} else {
+  document.body.insertAdjacentHTML("afterbegin", `
+    <div id="passwordGate" style="max-width:360px;margin:90px auto;padding:24px;text-align:center;font-family:'Prompt',sans-serif">
+      <img src="logo.png" alt="โลโก้คลินิก" style="width:120px;height:auto;display:block;margin:0 auto 16px;filter:drop-shadow(0 6px 14px rgba(14,156,139,0.18))">
+      <h2 style="font-family:'Prompt',sans-serif;font-weight:600;color:#0A6357;margin:0 0 8px">สำหรับเจ้าหน้าที่</h2>
+      <p style="color:#7B8B87;margin:0 0 14px">กรุณาใส่รหัสผ่าน</p>
+      <input id="passwordInput" type="password" placeholder="รหัสผ่าน"
+        style="width:100%;height:44px;padding:0 12px;border:1.5px solid #E1EEEA;border-radius:12px;font-size:15px;font-family:'Prompt',sans-serif">
+      <p id="passwordError" style="display:none;color:#D6553D;font-size:13px;margin:8px 0 0">รหัสผ่านไม่ถูกต้อง</p>
+      <button id="passwordBtn" style="width:100%;margin-top:10px;padding:12px;border:0;border-radius:12px;background:#0E9C8B;color:white;font-family:'Prompt',sans-serif;font-size:15px;font-weight:700;cursor:pointer">เข้าสู่ระบบ</button>
+    </div>
+  `);
+
+  function checkPassword() {
+    if (document.getElementById("passwordInput").value === ACCESS_PASSWORD) {
+      sessionStorage.setItem("clinic_authenticated", "yes");
+      openApp();
+    } else {
+      document.getElementById("passwordError").style.display = "block";
+    }
+  }
+
+  document.getElementById("passwordBtn").onclick = checkPassword;
+  document.getElementById("passwordInput").onkeydown = (e) => {
+    if (e.key === "Enter") checkPassword();
+  };
+}
 </script>
 </body>
 </html>
