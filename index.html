@@ -26,7 +26,7 @@
       var(--bg);
     background-attachment:fixed;
   }
-  .wrap{max-width:1080px; margin:0 auto;}
+  .wrap{max-width:1080px; margin:0 auto; display:none;}
 
   header{
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
@@ -608,9 +608,60 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   XLSX.writeFile(wb, `customer-source_${todayStr()}.xlsx`);
 });
 
-// ===== init =====
-render();
-refreshEntries();
+// ===== PASSWORD / init =====
+const ACCESS_PASSWORD = "foolman";
+
+function startApp() {
+  const wrap = document.querySelector(".wrap");
+
+  if (sessionStorage.getItem("clinic_authenticated") === "yes") {
+    wrap.style.display = "block";
+    render();
+    refreshEntries();
+    return;
+  }
+
+  const password = prompt("กรุณาใส่รหัสผ่าน");
+
+  if (password === ACCESS_PASSWORD) {
+    sessionStorage.setItem("clinic_authenticated", "yes");
+    wrap.style.display = "block";
+    render();
+    refreshEntries();
+  } else {
+    document.body.innerHTML = `
+      <div style="
+        font-family:'Sarabun',sans-serif;
+        max-width:420px;
+        margin:120px auto;
+        padding:30px 24px;
+        text-align:center;
+        color:#22302E;
+      ">
+        <div style="font-size:42px; margin-bottom:12px;">🔒</div>
+        <h2 style="margin:0 0 8px; color:#0A6357;">หน้านี้สำหรับเจ้าหน้าที่</h2>
+        <p style="margin:0 0 20px; color:#7B8B87;">รหัสผ่านไม่ถูกต้อง</p>
+        <button
+          onclick="location.reload()"
+          style="
+            border:none;
+            background:#0E9C8B;
+            color:white;
+            padding:12px 24px;
+            border-radius:999px;
+            font-family:'Sarabun',sans-serif;
+            font-weight:700;
+            cursor:pointer;
+          "
+        >
+          ลองใหม่
+        </button>
+      </div>
+    `;
+  }
+}
+
+startApp();
 </script>
 </body>
 </html>
