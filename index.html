@@ -6,7 +6,7 @@
 <title>เติบโต คลินิกเด็กและวัยรุ่น — บันทึกช่องทางลูกค้า</title>
 <link rel="icon" type="image/png" href="logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
@@ -17,7 +17,7 @@
   }
   *{box-sizing:border-box;}
   body{
-    margin:0; font-family:'Prompt',sans-serif; color:var(--text);
+    margin:0; font-family:'Sarabun',sans-serif; color:var(--text);
     padding:32px 20px 70px;
     background:
       radial-gradient(circle at 8% 10%, rgba(255,201,74,0.18) 0, transparent 45%),
@@ -26,7 +26,7 @@
       var(--bg);
     background-attachment:fixed;
   }
-  .wrap{max-width:1080px; margin:0 auto; display:none;}
+  .wrap{max-width:1080px; margin:0 auto;}
 
   header{
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
@@ -38,7 +38,7 @@
   h1{font-family:'Prompt',sans-serif; font-weight:600; font-size:22px; margin:0; color:var(--teal-deep); letter-spacing:0.2px;}
 
   #exportBtn{
-    font-family:'Prompt',sans-serif; font-weight:700; font-size:14px; color:#fff;
+    font-family:'Sarabun',sans-serif; font-weight:700; font-size:14px; color:#fff;
     background:linear-gradient(135deg, var(--teal), var(--teal-deep));
     border:none; border-radius:999px; padding:12px 26px; cursor:pointer; white-space:nowrap;
     box-shadow:0 6px 16px rgba(10,99,87,0.28);
@@ -59,12 +59,12 @@
   label{display:block; font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:6px;}
   input{
     width:100%; height:40px; border:1.5px solid var(--border); border-radius:14px; padding:0 12px;
-    font-size:13.5px; font-family:'Prompt',sans-serif; background:#FBFEFD; color:var(--text); outline:none;
+    font-size:13.5px; font-family:'Sarabun',sans-serif; background:#FBFEFD; color:var(--text); outline:none;
     transition:border-color 0.15s ease, box-shadow 0.15s ease;
   }
   input:focus{ border-color:var(--teal); box-shadow:0 0 0 3px rgba(14,156,139,0.15); }
   .field{margin-bottom:16px;}
-  .mono{font-family:'Prompt',sans-serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
 
   .channel-row{display:flex; align-items:center; justify-content:space-between;}
   .link-btn{border:none; background:none; color:var(--teal); font-size:11.5px; font-weight:700; cursor:pointer; padding:0;}
@@ -80,7 +80,7 @@
     border:1.5px solid var(--teal); background:var(--teal-faint);
     box-shadow:0 6px 14px rgba(14,156,139,0.18); transform:translateY(-1px);
   }
-  .chip .code{font-family:'Prompt',sans-serif; font-weight:700; font-size:16px;}
+  .chip .code{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:16px;}
   .chip.active .code, .chip.active .lbl{color:var(--teal-deep);}
   .chip .lbl{font-size:10.5px; line-height:1.2; color:var(--muted); text-align:center;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
@@ -103,7 +103,7 @@
     background:#FCEBE7; border-radius:10px; padding:8px 10px;
   }
   #saveBtn{
-    width:100%; font-family:'Prompt',sans-serif; font-weight:700; font-size:15px; color:#fff;
+    width:100%; font-family:'Sarabun',sans-serif; font-weight:700; font-size:15px; color:#fff;
     background:linear-gradient(135deg, var(--teal), var(--teal-deep));
     border:none; border-radius:16px; padding:13px 0; cursor:pointer;
     box-shadow:0 8px 18px rgba(10,99,87,0.26);
@@ -118,7 +118,7 @@
     text-transform:uppercase;
   }
   .sum-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
-  .sum-code{font-family:'Prompt',sans-serif; font-size:12px; font-weight:700; color:var(--teal-deep); width:20px;}
+  .sum-code{font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:700; color:var(--teal-deep); width:20px;}
   .sum-label{font-size:13px; width:130px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .bar-track{flex:1; background:var(--teal-faint); border-radius:999px; height:10px; overflow:hidden;}
   .bar-fill{height:100%; background:linear-gradient(90deg, var(--amber), #FF6FA5); border-radius:999px; transition:width 0.3s ease;}
@@ -148,9 +148,38 @@
 
   .empty-msg{font-size:13px; color:var(--muted); padding:24px 0 28px; text-align:center;}
   #statusMsg{font-size:11px; color:var(--muted); text-align:right; margin-top:10px;}
+
+  #lockScreen{
+    position:fixed; inset:0; background:var(--bg); z-index:999;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    padding:20px; text-align:center;
+  }
+  #lockScreen img{height:100px; width:auto; margin-bottom:6px; filter:drop-shadow(0 6px 14px rgba(14,156,139,0.18));}
+  #lockScreen h2{font-family:'Prompt',sans-serif; color:var(--teal-deep); margin:0; font-size:18px;}
+  #lockScreen p{color:var(--muted); font-size:13px; margin:0 0 6px;}
+  #lockInput{
+    width:220px; height:44px; border:1.5px solid var(--border); border-radius:14px; text-align:center;
+    font-size:18px; letter-spacing:4px; font-family:'IBM Plex Mono',monospace; outline:none;
+  }
+  #lockInput:focus{ border-color:var(--teal); box-shadow:0 0 0 3px rgba(14,156,139,0.15); }
+  #lockBtn{
+    width:220px; height:44px; border:none; border-radius:14px; color:#fff; font-weight:700; font-size:14px;
+    background:linear-gradient(135deg, var(--teal), var(--teal-deep)); cursor:pointer;
+  }
+  #lockError{color:var(--rust); font-size:12.5px; display:none;}
+  #appRoot{display:none;}
 </style>
 </head>
 <body>
+<div id="lockScreen">
+  <img src="logo.png" alt="โลโก้คลินิก" />
+  <h2>บันทึกช่องทางลูกค้า</h2>
+  <p>กรอกรหัสผ่านคลินิกเพื่อเข้าใช้งาน</p>
+  <input id="lockInput" type="password" inputmode="numeric" maxlength="12" placeholder="••••" />
+  <p id="lockError">รหัสผ่านไม่ถูกต้อง</p>
+  <button id="lockBtn">เข้าใช้งาน</button>
+</div>
+<div id="appRoot">
 <div class="wrap">
   <header>
     <div class="brand">
@@ -162,6 +191,7 @@
     </div>
     <button id="exportBtn" disabled>ดาวน์โหลด Excel (0)</button>
   </header>
+
 
   <div class="grid">
     <div class="card form-card">
@@ -224,9 +254,11 @@
     </div>
   </div>
 </div>
+</div>
 
 <script>
 // ===== ตั้งค่า =====
+const LOCK_PASSCODE = "1234"; // เปลี่ยนรหัสผ่านตรงนี้ได้เลย
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz2fkJdZrUVtQh-WKVLkswN4hzUot35b4xoYTMYyV6iv4Pu1-HQxo8isu0v6aK1HYpMg/exec";
 
 // ===== state =====
@@ -271,7 +303,12 @@ async function fetchEntries() {
       date: row.date,
       note: row.note,
     }))
-    .reverse();
+    .sort((a, b) => {
+      const da = String(a.date || "").slice(0, 10);
+      const db = String(b.date || "").slice(0, 10);
+      if (da !== db) return da < db ? 1 : -1; // วันที่ใหม่กว่าขึ้นก่อน
+      return b.id - a.id; // วันเดียวกัน อันที่กรอกทีหลังขึ้นก่อน
+    });
   const parsedChannels = (data.channels || []).map((c) => ({ code: Number(c.code), label: String(c.label) }));
   return { entries: parsedEntries, channels: parsedChannels };
 }
@@ -608,44 +645,36 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   XLSX.writeFile(wb, `customer-source_${todayStr()}.xlsx`);
 });
 
-// ===== init + password gate =====
-const ACCESS_PASSWORD = "foolman";
-
-function openApp() {
-  document.getElementById("passwordGate")?.remove();
-  document.querySelector(".wrap").style.display = "block";
+// ===== init =====
+function startApp() {
+  document.getElementById("lockScreen").style.display = "none";
+  document.getElementById("appRoot").style.display = "block";
   render();
   refreshEntries();
 }
 
-if (sessionStorage.getItem("clinic_authenticated") === "yes") {
-  openApp();
-} else {
-  document.body.insertAdjacentHTML("afterbegin", `
-    <div id="passwordGate" style="max-width:360px;margin:90px auto;padding:24px;text-align:center;font-family:'Prompt',sans-serif">
-      <img src="logo.png" alt="โลโก้คลินิก" style="width:160px;height:auto;display:block;margin:0 auto 16px;filter:drop-shadow(0 6px 14px rgba(14,156,139,0.18))">
-      <h2 style="font-family:'Prompt',sans-serif;font-weight:600;color:#0A6357;margin:0 0 8px">สำหรับเจ้าหน้าที่</h2>
-      <p style="color:#7B8B87;margin:0 0 14px">กรุณาใส่รหัสผ่าน</p>
-      <input id="passwordInput" type="password" placeholder="รหัสผ่าน"
-        style="width:100%;height:44px;padding:0 12px;border:1.5px solid #E1EEEA;border-radius:12px;font-size:15px;font-family:'Prompt',sans-serif">
-      <p id="passwordError" style="display:none;color:#D6553D;font-size:13px;margin:8px 0 0">รหัสผ่านไม่ถูกต้อง</p>
-      <button id="passwordBtn" style="width:100%;margin-top:10px;padding:12px;border:0;border-radius:12px;background:#0E9C8B;color:white;font-family:'Prompt',sans-serif;font-size:15px;font-weight:700;cursor:pointer">เข้าสู่ระบบ</button>
-    </div>
-  `);
-
-  function checkPassword() {
-    if (document.getElementById("passwordInput").value === ACCESS_PASSWORD) {
-      sessionStorage.setItem("clinic_authenticated", "yes");
-      openApp();
-    } else {
-      document.getElementById("passwordError").style.display = "block";
-    }
+function tryUnlock() {
+  const input = document.getElementById("lockInput");
+  const err = document.getElementById("lockError");
+  if (input.value === LOCK_PASSCODE) {
+    localStorage.setItem("clinic-unlocked", "1");
+    startApp();
+  } else {
+    err.style.display = "block";
+    input.value = "";
+    input.focus();
   }
+}
 
-  document.getElementById("passwordBtn").onclick = checkPassword;
-  document.getElementById("passwordInput").onkeydown = (e) => {
-    if (e.key === "Enter") checkPassword();
-  };
+document.getElementById("lockBtn").addEventListener("click", tryUnlock);
+document.getElementById("lockInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") tryUnlock();
+});
+
+if (localStorage.getItem("clinic-unlocked") === "1") {
+  startApp();
+} else {
+  document.getElementById("lockInput").focus();
 }
 </script>
 </body>
